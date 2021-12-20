@@ -28,7 +28,7 @@ int64_t KalmanFilter(int64_t raw_offset){
     return (int64_t)x_result;
 }
 
-int64_t KalmanFilterPro(int64_t raw_offset){
+int64_t KalmanFilterPro(int64_t raw_offset, int64_t raw_delay){
     kf_counter++;
     float x_predict = kf_x_prev + kf_q;
     kf_P = kf_P + kf_Q;
@@ -45,11 +45,11 @@ int64_t KalmanFilterPro(int64_t raw_offset){
     kf_Q = (1.0 - dk) * kf_Q + dk * (kf_K * kf_K * kf_e * kf_e);
     float n = (float)kf_counter;
     // 方差和平均值
-    float kf_mean = ((float)kf_counter * kf_mean_prev + (float)raw_offset) / (float)(kf_counter + 1);
+    float kf_mean = ((float)kf_counter * kf_mean_prev + (float)raw_delay) / (float)(kf_counter + 1);
     float kf_var = ( 
         ( n/(n + 1) ) * kf_var_prev) -
         ( n/((n + 1)*(n + 1))) * (kf_mean_prev * kf_mean_prev) + 
-        ((n + 2) / ((n + 1)*(n + 1)) * (float)raw_offset);
+        ((n + 2) / ((n + 1)*(n + 1)) * (float)raw_delay);
     kf_RR = kf_R + kf_var;
 
     kf_mean_prev = kf_mean;
